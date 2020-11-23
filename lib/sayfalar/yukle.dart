@@ -37,7 +37,7 @@ class _YukleState extends State<Yukle> {
   Widget gonderiFormu() {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.pink.shade100,
+        backgroundColor: Colors.pink.shade500,
         title: Text(
           "Gönderi Oluştur",
           style: TextStyle(color: Colors.black),
