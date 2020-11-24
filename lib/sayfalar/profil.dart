@@ -89,9 +89,31 @@ class _ProfilState extends State<Profil> {
               children: [
                 _profilDetaylari(snapshot
                     .data), // çektiğimiz bilgileri profil detayda gösterebiliriz
+                _gonderileriGoster()
               ],
             );
           }),
+    );
+  }
+
+  Widget _gonderileriGoster() {
+    List<GridTile> fayanslar = [];
+    _gonderiler.forEach((gonderi) {
+      fayanslar.add(_fayansOlustur(gonderi));
+    });
+
+    return GridView.count(
+      crossAxisCount: 3,
+      mainAxisSpacing: 2.0,
+      crossAxisSpacing: 2.0,
+      shrinkWrap: true,
+      children: fayanslar,
+    );
+  }
+
+  GridTile _fayansOlustur(Gonderi gonderi) { // gonderi parametresinin veri türü bilinmediği için sadece gönderi yazdığımızda resmin url sine ulaşamadık
+    return GridTile(
+      child: Image.network(gonderi.gonderiResmiUrl,fit: BoxFit.cover,),
     );
   }
 

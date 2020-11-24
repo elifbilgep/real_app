@@ -68,8 +68,8 @@ class FireStoreServisi {
     QuerySnapshot snapshot = await _firestore
         .collection("gonderiler")
         .doc(kullaniciId)
-        .collection("kullaniciGonderileri")
-        .orderBy("olusturlmaZamani", descending: true) //yeniden eskiye çekme
+        .collection("kullaniciGonderileri").orderBy("olusturulmaZamani",descending: true)
+         //yeniden eskiye çekme
         .get();
     List<Gonderi> gonderilerr =
         snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
