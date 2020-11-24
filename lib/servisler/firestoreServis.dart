@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:realapp/modeller/gonderi.dart';
 import 'package:realapp/modeller/kullanici.dart';
 
 class FireStoreServisi {
@@ -61,5 +62,17 @@ class FireStoreServisi {
       "konum": konum,
       "olusturulmaZamani": zaman,
     });
+  }
+
+  Future<List<Gonderi>> gonderiGetir(kullaniciId) async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("gonderiler")
+        .doc(kullaniciId)
+        .collection("kullaniciGonderileri")
+        .orderBy("olusturlmaZamani", descending: true) //yeniden eskiye çekme
+        .get();
+    List<Gonderi> gonderilerr =
+        snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
+    return gonderilerr;
   }
 }

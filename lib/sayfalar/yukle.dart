@@ -81,17 +81,23 @@ class _YukleState extends State<Yukle> {
           SizedBox(
             height: 20,
           ),
-          TextFormField(
-            controller: aciklamaKontrol,
-            decoration: InputDecoration(
-                hintText: "Açıklama ekle",
-                contentPadding: EdgeInsets.only(left: 15, right: 15)),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: TextFormField(
+              controller: aciklamaKontrol,
+              decoration: InputDecoration(
+                  hintText: "Açıklama ekle",
+                  contentPadding: EdgeInsets.only(left: 15, right: 15)),
+            ),
           ),
-          TextFormField(
-            controller: konumKontrol,
-            decoration: InputDecoration(
-                hintText: "Konum ekle",
-                contentPadding: EdgeInsets.only(left: 15, right: 15)),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: TextFormField(
+              controller: konumKontrol,
+              decoration: InputDecoration(
+                  hintText: "Konum ekle",
+                  contentPadding: EdgeInsets.only(left: 15, right: 15)),
+            ),
           ),
         ],
       ),

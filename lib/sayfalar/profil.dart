@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:realapp/modeller/gonderi.dart';
 import 'package:realapp/modeller/kullanici.dart';
 import 'package:realapp/servisler/firestoreServis.dart';
 import 'package:realapp/servisler/yetkilendirme.dart';
@@ -17,9 +18,23 @@ class Profil extends StatefulWidget {
 }
 
 class _ProfilState extends State<Profil> {
-  int _gpnderiSayisi = 0;
+  int _gonderiSayisi = 0;
   int _takipci = 0;
   int _takipEdilen = 0;
+  List<Gonderi> _gonderiler = [];
+
+  _gonderileriGetir() async {
+    try {
+      List<Gonderi> gonderiler =
+          await FireStoreServisi().gonderiGetir(widget.profilSahibiId);
+      setState(() {
+        _gonderiler = gonderiler;
+        _gonderiSayisi = _gonderiler.length;
+      });
+    } catch (hata) {
+      print("hata:" + hata);
+    }
+  }
 
   _takipciSayisiGetir() async {
     int takipciSayisi =
@@ -43,6 +58,7 @@ class _ProfilState extends State<Profil> {
     super.initState();
     _takipciSayisiGetir();
     _takipEdilenSayisiGetir();
+    _gonderileriGetir();
   }
 
   @override
@@ -98,7 +114,7 @@ class _ProfilState extends State<Profil> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _sosyalSayac(baslik: "Gönderiler", sayi: _gpnderiSayisi),
+                    _sosyalSayac(baslik: "Gönderiler", sayi: _gonderiSayisi),
                     _sosyalSayac(baslik: "Takipçi", sayi: _takipci),
                     _sosyalSayac(baslik: "Takip", sayi: _takipEdilen),
                   ],
