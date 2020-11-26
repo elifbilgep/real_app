@@ -14,16 +14,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Provider<YetkilendirmeServisi>(
-      create: (_)=> YetkilendirmeServisi() ,
-          child: MaterialApp(
+      create: (_) => YetkilendirmeServisi(),
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Projem',
         theme: ThemeData(
-          primarySwatch: Colors.indigo,
+          primaryColor: Colors.pink.shade100,
         ),
         home: Yonlendirme(),
       ),
     );
   }
-  
+
+    
 }

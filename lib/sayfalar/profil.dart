@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realapp/modeller/gonderi.dart';
 import 'package:realapp/modeller/kullanici.dart';
+import 'package:realapp/sayfalar/profiliDuzenle.dart';
 import 'package:realapp/servisler/firestoreServis.dart';
 import 'package:realapp/servisler/yetkilendirme.dart';
+import 'package:realapp/widgetlar/gonderikarti.dart';
 
 class Profil extends StatefulWidget {
   final String profilSahibiId;
@@ -22,15 +24,20 @@ class _ProfilState extends State<Profil> {
   int _takipci = 0;
   int _takipEdilen = 0;
   List<Gonderi> _gonderiler = [];
+  String gonderiStili = "liste";
+  String _aktifKullaniciId;
+  Kullanici _profilSahibi;
 
   _gonderileriGetir() async {
     try {
       List<Gonderi> gonderiler =
           await FireStoreServisi().gonderiGetir(widget.profilSahibiId);
-      setState(() {
-        _gonderiler = gonderiler;
-        _gonderiSayisi = _gonderiler.length;
-      });
+      if (mounted) {
+        setState(() {
+          _gonderiler = gonderiler;
+          _gonderiSayisi = _gonderiler.length;
+        });
+      }
     } catch (hata) {
       print("hata:" + hata);
     }
@@ -39,17 +46,21 @@ class _ProfilState extends State<Profil> {
   _takipciSayisiGetir() async {
     int takipciSayisi =
         await FireStoreServisi().takipciSayisi(widget.profilSahibiId);
-    setState(() {
-      _takipci = takipciSayisi;
-    });
+    if (mounted) {
+      setState(() {
+        _takipci = takipciSayisi;
+      });
+    }
   }
 
   _takipEdilenSayisiGetir() async {
     int takipEdilen =
         await FireStoreServisi().takipEdilenSayisi(widget.profilSahibiId);
-    setState(() {
-      _takipEdilen = takipEdilen;
-    });
+    if (mounted) {
+      setState(() {
+        _takipEdilen = takipEdilen;
+      });
+    }
   }
 
   @override
@@ -59,6 +70,9 @@ class _ProfilState extends State<Profil> {
     _takipciSayisiGetir();
     _takipEdilenSayisiGetir();
     _gonderileriGetir();
+    _aktifKullaniciId =
+        Provider.of<YetkilendirmeServisi>(context, listen: false)
+            .aktifKullaniciId;
   }
 
   @override
@@ -81,39 +95,60 @@ class _ProfilState extends State<Profil> {
       body: FutureBuilder<Object>(
           future: FireStoreServisi().kullaniciGetir(widget.profilSahibiId),
           builder: (context, snapshot) {
+            // bu snapshot kullanıcının bilgilerini tutuyor
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
+
+            _profilSahibi = snapshot.data;
 
             return ListView(
               children: [
                 _profilDetaylari(snapshot
                     .data), // çektiğimiz bilgileri profil detayda gösterebiliriz
-                _gonderileriGoster()
+                _gonderileriGoster(snapshot.data)
               ],
             );
           }),
     );
   }
 
-  Widget _gonderileriGoster() {
-    List<GridTile> fayanslar = [];
-    _gonderiler.forEach((gonderi) {
-      fayanslar.add(_fayansOlustur(gonderi));
-    });
+  Widget _gonderileriGoster(Kullanici profilData) {
+    if (gonderiStili == "liste") {
+      return ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        itemBuilder: (context, index) {
+          return GonderiKarti(
+            gonderi: _gonderiler[index],
+            yayinlayan: profilData,
+          );
+        },
+        itemCount: _gonderiler.length,
+      );
+    } else {
+      List<GridTile> fayanslar = [];
+      _gonderiler.forEach((gonderi) {
+        fayanslar.add(_fayansOlustur(gonderi));
+      });
 
-    return GridView.count(
-      crossAxisCount: 3,
-      mainAxisSpacing: 2.0,
-      crossAxisSpacing: 2.0,
-      shrinkWrap: true,
-      children: fayanslar,
-    );
+      return GridView.count(
+        crossAxisCount: 3,
+        mainAxisSpacing: 2.0,
+        crossAxisSpacing: 2.0,
+        shrinkWrap: true,
+        children: fayanslar,
+      );
+    }
   }
 
-  GridTile _fayansOlustur(Gonderi gonderi) { // gonderi parametresinin veri türü bilinmediği için sadece gönderi yazdığımızda resmin url sine ulaşamadık
+  GridTile _fayansOlustur(Gonderi gonderi) {
+    // gonderi parametresinin veri türü bilinmediği için sadece gönderi yazdığımızda resmin url sine ulaşamadık
     return GridTile(
-      child: Image.network(gonderi.gonderiResmiUrl,fit: BoxFit.cover,),
+      child: Image.network(
+        gonderi.gonderiResmiUrl,
+        fit: BoxFit.cover,
+      ),
     );
   }
 
@@ -156,7 +191,9 @@ class _ProfilState extends State<Profil> {
           SizedBox(
             height: 25,
           ),
-          _profiliDuzenleButonu(),
+          widget.profilSahibiId == _aktifKullaniciId
+              ? _profiliDuzenleButonu()
+              : Text("Takip et butonu"),
         ],
       ),
     );
@@ -166,7 +203,10 @@ class _ProfilState extends State<Profil> {
     return Container(
       width: double.infinity,
       child: OutlineButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ProfiliDuzenle(profil: _profilSahibi,)));
+        },
         child: Text("Profili Düzenle"),
       ),
     );

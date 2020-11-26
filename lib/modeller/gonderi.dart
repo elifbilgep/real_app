@@ -17,7 +17,6 @@ class Gonderi {
       this.konum});
 
   factory Gonderi.dokumandanUret(DocumentSnapshot doc) {
-    var docData = doc.data();
     return Gonderi(
       id: doc.id,
       gonderiResmiUrl: doc["gonderiResmiUrl"],
